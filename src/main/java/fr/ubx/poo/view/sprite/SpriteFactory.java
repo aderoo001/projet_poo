@@ -23,7 +23,7 @@ public final class SpriteFactory {
             return new SpriteDecor(layer, factory.get(STONE), position);
         if (decor instanceof Tree)
             return new SpriteDecor(layer, factory.get(TREE), position);
-        return null;
+        throw new RuntimeException("Unsupported sprite for decor " + decor);
     }
 
     public static Sprite createPlayer(Pane layer, Player player) {
