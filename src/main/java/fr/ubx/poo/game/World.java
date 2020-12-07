@@ -53,7 +53,7 @@ public class World {
     }
 
     public boolean isInside(Position position) {
-        return true; // to update
+        return true;
     }
 
     public boolean isEmpty(Position position) {
