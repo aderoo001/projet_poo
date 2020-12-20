@@ -8,17 +8,24 @@ import fr.ubx.poo.game.Direction;
 import fr.ubx.poo.game.Position;
 import fr.ubx.poo.game.WorldEntity;
 import fr.ubx.poo.model.Movable;
+import fr.ubx.poo.model.decor.Box;
+import fr.ubx.poo.model.decor.Decor;
 import fr.ubx.poo.model.decor.Stone;
 import fr.ubx.poo.model.decor.Tree;
 import fr.ubx.poo.model.go.GameObject;
 import fr.ubx.poo.game.Game;
 
+import java.util.List;
+
 public class Player extends GameObject implements Movable {
 
-    private final boolean alive = true;
+    private boolean alive = true;
     Direction direction;
     private boolean moveRequested = false;
     private int lives = 1;
+    private int numberOfKeys = 0 ;
+    private int numberofBombs = 1 ;
+    private int Bombrange = 1;
     private boolean winner;
 
     public Player(Game game, Position position) {
@@ -44,15 +51,59 @@ public class Player extends GameObject implements Movable {
 
     @Override
     public boolean canMove(Direction direction) {
-        Position nextPos = direction.nextPosition(getPosition());
-        if (game.getWorld().get(nextPos) instanceof Stone) return false;
-        if (game.getWorld().get(nextPos) instanceof Tree) return false;
-        if (nextPos.inside(game.getWorld().dimension)) return true;
+        Position nextpos = direction.nextPosition(getPosition());
+        if (nextpos.inside(game.getWorld().dimension)) {
+            Decor decor = game.getWorld().get(nextpos) ;
+            if ( decor == null)
+                return true ;
+            if (decor.canWalkOn(this))
+                return true ;
+            if (decor instanceof Box) {
+                Position next_to_nextpos = direction.nextPosition(nextpos) ;
+                if (next_to_nextpos.inside(game.getWorld().dimension)) {
+                    List<Monster> monsters = game.getMonsters() ;
+                    for (Monster m : monsters) {
+                        if (m.getPosition().equals(next_to_nextpos)) {
+                            ((Box) decor).setCanMove(false);
+                            return false;
+                        }
+                    }
+                    if (game.getWorld().isEmpty(next_to_nextpos)) {
+                        ((Box) decor).setCanMove(true);
+                        return true;
+                    }
+                }
+                else {
+                    ((Box) decor).setCanMove(false);
+                    return false ;
+                }
+            }
+        }
         return false;
     }
 
     public void doMove(Direction direction) {
         Position nextPos = direction.nextPosition(getPosition());
+        List<Monster> monsters = game.getMonsters() ;
+        for (Monster m : monsters){
+            if ( m.getPosition().equals(nextPos) ){
+                m.action(this,game,nextPos);
+                setPosition(nextPos);
+            }
+        }
+        Decor decor = game.getWorld().get(nextPos) ;
+        if (decor == null)
+            setPosition(nextPos);
+        else if (decor.canWalkOn(this)) {
+            decor.action(this,game,nextPos);
+            setPosition(nextPos);
+        }
+        else if (decor instanceof Box) {
+            if (((Box)decor).canMove(direction)) {
+                ((Box)decor).action(this,game,nextPos);
+                ((Box)decor).action(this,game, direction.nextPosition(nextPos));
+            }
+        }
         setPosition(nextPos);
     }
 
@@ -70,7 +121,41 @@ public class Player extends GameObject implements Movable {
     }
 
     public boolean isAlive() {
+        if (lives <= 0)
+            alive = false ;
         return alive;
+    }
+    public void setLives(int lives) {
+        this.lives = lives;
+    }
+
+    public int getNumberOfKeys() {
+        return numberOfKeys;
+    }
+
+    public void setNumberOfKeys(int numberOfKeys) {
+        this.numberOfKeys = numberOfKeys;
+    }
+
+
+    public int getNumberofBombs() {
+        return numberofBombs;
+    }
+
+    public void setNumberofBombs(int numberofBombs) {
+        this.numberofBombs = numberofBombs;
+    }
+
+    public int getBombrange() {
+        return Bombrange;
+    }
+
+    public void setBombrange(int bombrange) {
+        Bombrange = bombrange;
+    }
+
+    public void setWinner(boolean winner) {
+        this.winner = winner;
     }
 
 }

@@ -6,14 +6,18 @@ package fr.ubx.poo.game;
 
 
 import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
 
+import fr.ubx.poo.model.go.character.Monster;
 import fr.ubx.poo.model.go.character.Player;
 
 public class Game {
 
     private final World world;
     private final Player player;
+    private final List<Monster> monsters = new ArrayList<>() ;
     private final String worldPath;
     public int initPlayerLives;
     public String initWorldPrefix;
@@ -25,6 +29,10 @@ public class Game {
         world = new World(this.loadLevel(1, this.worldPath));
         Position positionPlayer = null;
         try {
+            for (Position p : world.findMonsters()) {
+                Monster monster = new Monster(this,p) ;
+                monsters.add(monster) ;
+            }
             positionPlayer = world.findPlayer();
             player = new Player(this, positionPlayer);
         } catch (PositionNotFoundException e) {
@@ -114,5 +122,7 @@ public class Game {
         return this.player;
     }
 
-
+    public List<Monster> getMonsters() {
+        return this.monsters;
+    }
 }

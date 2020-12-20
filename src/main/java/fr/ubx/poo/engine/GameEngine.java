@@ -5,6 +5,7 @@
 package fr.ubx.poo.engine;
 
 import fr.ubx.poo.game.Direction;
+import fr.ubx.poo.model.go.character.Monster;
 import fr.ubx.poo.view.sprite.Sprite;
 import fr.ubx.poo.view.sprite.SpriteFactory;
 import fr.ubx.poo.game.Game;
@@ -31,17 +32,20 @@ public final class GameEngine {
     private final String windowTitle;
     private final Game game;
     private final Player player;
+    private List<Monster> monsters = new ArrayList<>() ;
     private final List<Sprite> sprites = new ArrayList<>();
     private StatusBar statusBar;
     private Pane layer;
     private Input input;
     private Stage stage;
     private Sprite spritePlayer;
+    private final List<Sprite> spriteMonsters = new ArrayList<>();
 
     public GameEngine(final String windowTitle, Game game, final Stage stage) {
         this.windowTitle = windowTitle;
         this.game = game;
         this.player = game.getPlayer();
+        this.monsters = game.getMonsters() ;
         initialize(stage, game);
         buildAndSetGameLoop();
     }
@@ -69,7 +73,8 @@ public final class GameEngine {
         // Create decor sprites
         game.getWorld().forEach( (pos,d) -> sprites.add(SpriteFactory.createDecor(layer, pos, d)));
         spritePlayer = SpriteFactory.createPlayer(layer, player);
-
+        for (Monster m : monsters)
+            spriteMonsters.add(SpriteFactory.createMonster(layer,m)) ;
     }
 
     protected final void buildAndSetGameLoop() {
@@ -131,7 +136,12 @@ public final class GameEngine {
 
     private void update(long now) {
         player.update(now);
-
+        if ( game.getWorld().isChanged() ) {
+            sprites.forEach(Sprite::remove);
+            sprites.clear();
+            game.getWorld().forEach( (pos,d) -> sprites.add(SpriteFactory.createDecor(layer, pos, d)));
+            game.getWorld().setChanged(false);
+        }
         if (player.isAlive() == false) {
             gameLoop.stop();
             showMessage("Perdu!", Color.RED);
@@ -144,6 +154,7 @@ public final class GameEngine {
 
     private void render() {
         sprites.forEach(Sprite::render);
+        spriteMonsters.forEach(Sprite::render);
         // last rendering to have player in the foreground
         spritePlayer.render();
     }
