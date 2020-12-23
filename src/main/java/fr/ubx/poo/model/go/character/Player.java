@@ -8,10 +8,7 @@ import fr.ubx.poo.game.Direction;
 import fr.ubx.poo.game.Position;
 import fr.ubx.poo.game.WorldEntity;
 import fr.ubx.poo.model.Movable;
-import fr.ubx.poo.model.decor.Box;
-import fr.ubx.poo.model.decor.Decor;
-import fr.ubx.poo.model.decor.Stone;
-import fr.ubx.poo.model.decor.Tree;
+import fr.ubx.poo.model.decor.*;
 import fr.ubx.poo.model.go.GameObject;
 import fr.ubx.poo.game.Game;
 
@@ -47,6 +44,16 @@ public class Player extends GameObject implements Movable {
             this.direction = direction;
         }
         moveRequested = true;
+    }
+
+    @Override
+    public void action(Player Player, Game game, Position pos) {
+        Decor decor = game.getWorld().get(Player.getDirection().nextPosition(pos));
+        if ((decor instanceof DoorNextClosed)
+                && (Player.getNumberOfKeys() > 0)) {
+            game.getWorld().set(Player.getDirection().nextPosition(pos), new DoorNextOpened());
+            game.getWorld().setChanged(true);
+        }
     }
 
     @Override
@@ -125,6 +132,7 @@ public class Player extends GameObject implements Movable {
             alive = false ;
         return alive;
     }
+
     public void setLives(int lives) {
         this.lives = lives;
     }
@@ -136,7 +144,6 @@ public class Player extends GameObject implements Movable {
     public void setNumberOfKeys(int numberOfKeys) {
         this.numberOfKeys = numberOfKeys;
     }
-
 
     public int getNumberofBombs() {
         return numberofBombs;
@@ -157,5 +164,4 @@ public class Player extends GameObject implements Movable {
     public void setWinner(boolean winner) {
         this.winner = winner;
     }
-
 }

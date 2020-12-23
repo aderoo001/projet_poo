@@ -9,6 +9,7 @@ public class Monster extends GameObject {
     public Monster(Game game, Position position){
         super(game,position) ;
     }
+
     public void action (Player player, Game game, Position pos){
         player.setLives (player.getLives() - 1);
     }

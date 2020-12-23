@@ -34,6 +34,7 @@ public class World {
         }
         throw new PositionNotFoundException("Player");
     }
+
     public List<Position> findMonsters() {
         List<Position> l = new ArrayList<>() ;
         for (int x = 0 ; x < dimension.width; x++) {
@@ -45,6 +46,7 @@ public class World {
         }
         return l ;
     }
+
     public Decor get(Position position) {
         return grid.get(position);
     }

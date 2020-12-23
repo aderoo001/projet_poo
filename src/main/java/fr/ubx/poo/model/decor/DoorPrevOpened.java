@@ -1,6 +1,22 @@
 package fr.ubx.poo.model.decor;
 
+import fr.ubx.poo.game.Game;
+import fr.ubx.poo.game.Position;
+import fr.ubx.poo.model.go.character.Player;
+
 public class DoorPrevOpened extends Decor{
+
+    @Override
+    public boolean canWalkOn(Player player) {
+        return true;
+    }
+
+    @Override
+    public void action(Player player, Game game, Position pos) {
+        game.nextWorld(1);
+        game.getWorld().setChanged(true);
+    }
+
     /**
      * Returns a string representation of the object. In general, the
      * {@code toString} method returns a string that
