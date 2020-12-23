@@ -5,6 +5,7 @@
 package fr.ubx.poo.engine;
 
 import fr.ubx.poo.game.Direction;
+import fr.ubx.poo.model.decor.DoorPrevOpened;
 import fr.ubx.poo.model.go.character.Monster;
 import fr.ubx.poo.view.sprite.Sprite;
 import fr.ubx.poo.view.sprite.SpriteFactory;
@@ -31,7 +32,7 @@ public final class GameEngine {
     private static AnimationTimer gameLoop;
     private final String windowTitle;
     private final Game game;
-    private final Player player;
+    private Player player;
     private List<Monster> monsters = new ArrayList<>() ;
     private final List<Sprite> sprites = new ArrayList<>();
     private StatusBar statusBar;
@@ -99,6 +100,9 @@ public final class GameEngine {
             Platform.exit();
             System.exit(0);
         }
+        if (this.input.isKey()) {
+            this.player.action(this.player, this.game, this.player.getPosition());
+        }
         if (input.isMoveDown()) {
             player.requestMove(Direction.S);
         }
@@ -137,6 +141,12 @@ public final class GameEngine {
     private void update(long now) {
         player.update(now);
         if ( game.getWorld().isChanged() ) {
+            if (this.game.isLevelChanged()) {
+                this.player = this.game.getPlayer();
+                this.monsters = this.game.getMonsters();
+                this.initialize(this.stage, this.game);
+                this.game.setLevelChanged(false);
+            }
             sprites.forEach(Sprite::remove);
             sprites.clear();
             game.getWorld().forEach( (pos,d) -> sprites.add(SpriteFactory.createDecor(layer, pos, d)));
