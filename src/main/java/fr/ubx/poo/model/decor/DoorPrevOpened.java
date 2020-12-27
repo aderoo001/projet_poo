@@ -13,7 +13,8 @@ public class DoorPrevOpened extends Decor{
 
     @Override
     public void action(Player player, Game game, Position pos) {
-        game.nextWorld(1);
+        boolean[] levelChanged = {true, true};
+        game.setLevelChanged(levelChanged);
         game.getWorld().setChanged(true);
     }
 

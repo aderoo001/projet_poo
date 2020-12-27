@@ -18,26 +18,23 @@ import java.util.Properties;
 public class Game {
 
     private final List<World> worldList = new ArrayList<>();
-    private Player player;
-    private final List<Monster> monsters = new ArrayList<>() ;
-    private final String worldPath;
+    private final Player player;
+    private final List<Monster> monsters = new ArrayList<>();
     private int level = 0;
-    private boolean levelChanged = false;
+    private boolean[] levelChanged = {false, false};
     public int initPlayerLives;
     public String initWorldPrefix;
-    public int initWorldLevels;
 
     public Game(String worldPath) {
         Position positionPlayer;
-        this.worldPath = worldPath;
         loadConfig(worldPath);
-        for (int i = 0; i < this.initWorldLevels; i++ ) {
-            this.worldList.add(new World(this.loadLevel(i + 1, this.worldPath)));
+        for (int i = 0; i < this.initWorldLevels; i++) {
+            this.worldList.add(new World(this.loadLevel(i + 1, worldPath)));
         }
         try {
             for (Position p : worldList.get(this.level).findMonsters()) {
-                Monster monster = new Monster(this,p) ;
-                monsters.add(monster) ;
+                Monster monster = new Monster(this, p);
+                monsters.add(monster);
             }
             positionPlayer = worldList.get(this.level).findPlayer();
             player = new Player(this, positionPlayer);
@@ -45,6 +42,20 @@ public class Game {
             System.err.println("Position not found : " + e.getLocalizedMessage());
             throw new RuntimeException(e);
         }
+    }
+
+    public int initWorldLevels;
+
+    public int getLevel() {
+        return level;
+    }
+
+    public boolean isLevelChanged() {
+        return levelChanged[0];
+    }
+
+    public void setLevelChanged(boolean[] levelChanged) {
+        this.levelChanged = levelChanged;
     }
 
     public int getInitPlayerLives() {
@@ -135,22 +146,10 @@ public class Game {
         return this.monsters;
     }
 
-    public int getLevel() {
-        return level;
-    }
-
-    public boolean isLevelChanged() {
-        return this.levelChanged;
-    }
-
-    public  void setLevelChanged(boolean change) {
-        this.levelChanged = change;
-    }
-
     public void incLevel() throws LevelOutOfRangeException {
         if (this.level < this.initWorldLevels) {
             this.level ++;
-            this.setLevelChanged(true);
+
         } else {
             String message = "Can't reach next level.";
             throw new LevelOutOfRangeException(message);
@@ -160,7 +159,6 @@ public class Game {
     public void decLevel() throws LevelOutOfRangeException {
         if (this.level > 0) {
             this.level--;
-            this.setLevelChanged(true);
         } else {
             String message = "Can't reach previous level.";
             throw new LevelOutOfRangeException(message);
@@ -174,7 +172,7 @@ public class Game {
                     this.incLevel();
                     this.worldList.get(this.level).forEach((position, decor) -> {
                         if (decor instanceof DoorPrevOpened) {
-                            this.setPlayer(this, position);
+                            this.player.setPosition(position);
                         }
                     });
                 }
@@ -182,7 +180,7 @@ public class Game {
                     this.decLevel();
                     this.worldList.get(this.level).forEach((position, decor) -> {
                         if (decor instanceof DoorNextOpened) {
-                            this.setPlayer(this, position);
+                            this.player.setPosition(position);
                         }
                     });
                 }
@@ -197,12 +195,18 @@ public class Game {
         }
     }
 
-    private void setPlayer(Game game, Position position) {
-        Player player = new Player(game, position);
-        player.setBombrange(this.player.getBombrange());
-        player.setLives(this.player.getLives());
-        player.setNumberofBombs(this.player.getNumberofBombs());
-        player.setNumberOfKeys(this.player.getNumberOfKeys());
-        this.player = player;
+    public boolean update() {
+        boolean test = false;
+        if (this.isLevelChanged()) {
+            int mode = 0;
+            if (this.levelChanged[1]) {
+                mode = 1;
+            }
+            this.nextWorld(mode);
+            test = true;
+        }
+        this.levelChanged[0] = false;
+        this.levelChanged[1] = false;
+        return test;
     }
 }

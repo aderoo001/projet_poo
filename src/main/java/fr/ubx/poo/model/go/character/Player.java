@@ -19,7 +19,7 @@ public class Player extends GameObject implements Movable {
     private boolean alive = true;
     Direction direction;
     private boolean moveRequested = false;
-    private int lives = 1;
+    private int lives;
     private int numberOfKeys = 0 ;
     private int numberofBombs = 1 ;
     private int Bombrange = 1;
@@ -52,6 +52,7 @@ public class Player extends GameObject implements Movable {
         if ((decor instanceof DoorNextClosed)
                 && (Player.getNumberOfKeys() > 0)) {
             game.getWorld().set(Player.getDirection().nextPosition(pos), new DoorNextOpened());
+            Player.setNumberOfKeys(Player.getNumberOfKeys() - 1);
             game.getWorld().setChanged(true);
         }
     }
