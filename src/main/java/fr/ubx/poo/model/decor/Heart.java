@@ -1,5 +1,9 @@
 package fr.ubx.poo.model.decor;
 
+import fr.ubx.poo.game.Game;
+import fr.ubx.poo.game.Position;
+import fr.ubx.poo.model.go.character.Player;
+
 public class Heart extends Decor{
     /**
      * Returns a string representation of the object. In general, the
@@ -25,5 +29,13 @@ public class Heart extends Decor{
     @Override
     public String toString() {
         return "HEART";
+    }
+    public boolean canWalkOn(Player player) {
+        return true;
+    }
+    public void action (Player player, Game game, Position pos) {
+        player.setLives (player.getLives() + 1);
+        game.getWorld().clear(pos);
+        game.getWorld().setChanged(true);
     }
 }

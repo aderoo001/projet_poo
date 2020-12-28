@@ -4,8 +4,6 @@
 
 package fr.ubx.poo.engine;
 
-import static fr.ubx.poo.view.image.ImageResource.*;
-
 import fr.ubx.poo.game.Game;
 import fr.ubx.poo.view.image.ImageFactory;
 import javafx.scene.Group;
@@ -16,6 +14,8 @@ import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 
+import static fr.ubx.poo.view.image.ImageResource.*;
+
 public class StatusBar {
     public static final int height = 55;
     private HBox hBox = new HBox();
@@ -24,16 +24,20 @@ public class StatusBar {
     private Text rangeValue = new Text();
     private Text keyValue = new Text();
     private HBox level = new HBox();
-    private int gameLevel = 1;
+    private int gameLevel;
+
+    public void setGameLevel(int gameLevel) {
+        this.gameLevel = gameLevel;
+    }
 
     private final Game game;
     private final DropShadow ds = new DropShadow();
 
 
-
     public StatusBar(Group root, int sceneWidth, int sceneHeight, Game game) {
         // Status bar
         this.game = game;
+        this.gameLevel = game.getLevel();
 
         level.getStyleClass().add("level");
         level.getChildren().add(new ImageView(ImageFactory.getInstance().getDigit(gameLevel)));
@@ -80,11 +84,11 @@ public class StatusBar {
     }
 
     public void update(Game game) {
-        updateLevel(1);
+        updateLevel(this.game.getLevel());
         liveValue.setText(String.valueOf(game.getPlayer().getLives()));
-        rangeValue.setText("?");
-        bombsValue.setText("?");
-        keyValue.setText("?");
+        rangeValue.setText(String.valueOf(game.getPlayer().getBombrange()));
+        bombsValue.setText(String.valueOf(game.getPlayer().getNumberofBombs()));
+        keyValue.setText(String.valueOf(game.getPlayer().getNumberOfKeys()));
     }
 
 }

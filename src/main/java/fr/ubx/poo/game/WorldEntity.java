@@ -27,7 +27,7 @@ public enum WorldEntity {
         ;
 
 
-    private char getCode() {
+    public char getCode() {
         return code;
     }
 
