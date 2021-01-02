@@ -5,12 +5,14 @@
 package fr.ubx.poo.model.go.character;
 
 import fr.ubx.poo.game.Direction;
-import fr.ubx.poo.game.Position;
-import fr.ubx.poo.game.WorldEntity;
-import fr.ubx.poo.model.Movable;
-import fr.ubx.poo.model.decor.*;
-import fr.ubx.poo.model.go.GameObject;
 import fr.ubx.poo.game.Game;
+import fr.ubx.poo.game.Position;
+import fr.ubx.poo.model.Movable;
+import fr.ubx.poo.model.decor.Box;
+import fr.ubx.poo.model.decor.Decor;
+import fr.ubx.poo.model.decor.DoorNextClosed;
+import fr.ubx.poo.model.decor.DoorNextOpened;
+import fr.ubx.poo.model.go.GameObject;
 
 import java.util.List;
 
@@ -19,9 +21,17 @@ public class Player extends GameObject implements Movable {
     private boolean alive = true;
     Direction direction;
     private boolean moveRequested = false;
+    private boolean isDamaged = false;
+    private long invicibleTimer = 0;
+    private int numberOfKeys = 0;
     private int lives;
-    private int numberOfKeys = 0 ;
-    private int numberofBombs = 1 ;
+    private int numberofBombs = 1;
+
+    public void setDamaged(boolean damaged) {
+        if (this.invicibleTimer == 0) {
+            this.isDamaged = damaged;
+        }
+    }
     private int Bombrange = 1;
     private boolean winner;
 
@@ -120,8 +130,16 @@ public class Player extends GameObject implements Movable {
             if (canMove(direction)) {
                 doMove(direction);
             }
+            moveRequested = false;
         }
-        moveRequested = false;
+        if (this.isDamaged) {
+            this.setDamaged(false);
+            this.setLives(this.lives - 1);
+            this.invicibleTimer = now;
+        }
+        if (now - this.invicibleTimer >= Math.pow(10, 9)) {
+            this.invicibleTimer = 0;
+        }
     }
 
     public boolean isWinner() {
@@ -130,7 +148,7 @@ public class Player extends GameObject implements Movable {
 
     public boolean isAlive() {
         if (lives <= 0)
-            alive = false ;
+            alive = false;
         return alive;
     }
 

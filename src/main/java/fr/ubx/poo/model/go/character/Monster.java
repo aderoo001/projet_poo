@@ -20,7 +20,7 @@ public class Monster extends GameObject implements Movable {
     }
 
     public void action (Player player, Game game, Position pos){
-        player.setLives (player.getLives() - 1);
+        player.setDamaged(true);
     }
 
     public Direction getDirection() {
