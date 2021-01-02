@@ -36,11 +36,9 @@ public class Monster extends GameObject implements Movable {
                     return false;
             } else if (decor == null) {
                 return true;
-            } else if (decor.canWalkOn(this.game.getPlayer())
+            } else return decor.canWalkOn(this.game.getPlayer())
                     && !(decor instanceof DoorPrevOpened)
-                    && !(decor instanceof DoorNextOpened)) {
-                return true;
-            }
+                    && !(decor instanceof DoorNextOpened);
         }
         return false;
     }
