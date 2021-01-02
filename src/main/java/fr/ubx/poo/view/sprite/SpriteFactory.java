@@ -51,8 +51,8 @@ public final class SpriteFactory {
     public static Sprite createPlayer(Pane layer, Player player) {
         return new SpritePlayer(layer, player);
     }
+
     public static Sprite createMonster (Pane layer, Monster monster) {
-        ImageFactory factory = ImageFactory.getInstance();
-        return new SpriteMonster(layer, factory.get(MONSTER_DOWN) ,monster);
+        return new SpriteMonster(layer, monster);
     }
 }

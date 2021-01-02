@@ -137,6 +137,7 @@ public final class GameEngine {
 
     private void update(long now) {
         player.update(now);
+        this.monsters.forEach(monster -> monster.update(now));
         if ( game.getWorld().isChanged() ) {
             if (this.game.update()) {
                 this.player.setPosition(this.game.getPlayer().getPosition());
