@@ -6,6 +6,7 @@ import javafx.scene.image.Image;
 import javafx.scene.layout.Pane;
 
 public abstract class SpriteGameObject extends Sprite {
+
     protected final GameObject go;
 
     public SpriteGameObject(Pane layer, Image image, GameObject go) {
@@ -17,4 +18,8 @@ public abstract class SpriteGameObject extends Sprite {
     public Position getPosition() {
         return go.getPosition();
     }
+    public GameObject getGo() {
+        return go;
+    }
+
 }

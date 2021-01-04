@@ -9,6 +9,7 @@ import static fr.ubx.poo.view.image.ImageResource.MONSTER_DOWN;
 
 import fr.ubx.poo.game.Position;
 import fr.ubx.poo.model.decor.*;
+import fr.ubx.poo.model.go.Bomb.Bomb;
 import fr.ubx.poo.model.go.character.Monster;
 import fr.ubx.poo.model.go.character.Player;
 import fr.ubx.poo.view.image.ImageFactory;
@@ -55,4 +56,5 @@ public final class SpriteFactory {
     public static Sprite createMonster (Pane layer, Monster monster) {
         return new SpriteMonster(layer, monster);
     }
+    public static SpriteBomb createBomb (Pane layer, Bomb bomb) { return new SpriteBomb(layer,bomb) ; }
 }

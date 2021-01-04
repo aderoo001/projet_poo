@@ -5,6 +5,7 @@
 package fr.ubx.poo.view.image;
 
 import fr.ubx.poo.game.Direction;
+import fr.ubx.poo.model.go.Bomb.State;
 import javafx.scene.image.Image;
 
 import static fr.ubx.poo.view.image.ImageResource.*;
@@ -17,9 +18,14 @@ public final class ImageFactory {
             PLAYER_UP, PLAYER_RIGHT, PLAYER_DOWN, PLAYER_LEFT,
     };
 
+
+    private final ImageResource[] bomb_states = new ImageResource[]{
+            BOMB4, BOMB3, BOMB2, BOMB1, EXPLOSION,EMPTY
+
     private final ImageResource[] monsterDirections = new ImageResource[]{
             // Direction { N, E, S, W }
             MONSTER_UP, MONSTER_RIGHT, MONSTER_DOWN, MONSTER_LEFT,
+
     };
 
     private final ImageResource[] digits = new ImageResource[]{
@@ -61,6 +67,8 @@ public final class ImageFactory {
     public Image getPlayer(Direction direction) {
         return get(directions[direction.ordinal()]);
     }
+
+    public Image getBomb (State state) {return get(bomb_states[state.ordinal()]) ;}
 
     public Image getMonster(Direction direction) {
         return get(monsterDirections[direction.ordinal()]);

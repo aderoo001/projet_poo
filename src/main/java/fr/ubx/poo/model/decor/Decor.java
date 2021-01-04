@@ -17,4 +17,5 @@ public class Decor extends Entity {
         return false ;
     }
     public void action (Player player, Game game, Position pos) {}
+    public boolean destroy (Game game,Position pos) {return false ;}
 }

@@ -3,6 +3,7 @@ package fr.ubx.poo.view.image;
 import javafx.scene.image.Image;
 
 public enum ImageResource {
+    EMPTY(""),
     BANNER_BOMB ("banner_bomb.png"),
     BANNER_RANGE ("banner_range.png"),
     HEART("heart.png"),
@@ -35,6 +36,11 @@ public enum ImageResource {
     BONUS_BOMB_RANGE_INC("bonus_bomb_range_inc.png"),
     DOOR_CLOSED("door_closed.png"),
     DOOR_OPENED("door_opened.png"),
+    BOMB4("bomb4.png"),
+    BOMB3("bomb3.png"),
+    BOMB2("bomb2.png"),
+    BOMB1("bomb1.png"),
+    EXPLOSION("explosion.png"),
     ;
 
     private final String FileName;
