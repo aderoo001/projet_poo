@@ -20,7 +20,7 @@ public final class ImageFactory {
 
 
     private final ImageResource[] bomb_states = new ImageResource[]{
-            BOMB4, BOMB3, BOMB2, BOMB1, EXPLOSION,EMPTY,
+            BOMB4, BOMB3, BOMB2, BOMB1, EXPLOSION, EMPTY,
     };
 
     private final ImageResource[] monsterDirections = new ImageResource[]{
