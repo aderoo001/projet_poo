@@ -68,7 +68,7 @@ public final class GameEngine {
 
         stage.setTitle(windowTitle);
         stage.setScene(scene);
-        stage.setResizable(true);
+        stage.setResizable(false);
         stage.show();
 
         input = new Input(scene);
@@ -142,6 +142,30 @@ public final class GameEngine {
         }.start();
     }
 
+    public void updateWindow() {
+        Group root = new Group();
+        layer = new Pane();
+
+        int height = game.getWorld().dimension.height;
+        int width = game.getWorld().dimension.width;
+        int sceneWidth = width * Sprite.size;
+        int sceneHeight = height * Sprite.size;
+        Scene scene = new Scene(root, sceneWidth, sceneHeight + StatusBar.height);
+        scene.getStylesheets().add(getClass().getResource("/css/application.css").toExternalForm());
+
+        stage.setTitle(windowTitle);
+        stage.setScene(scene);
+        stage.show();
+
+        input = new Input(scene);
+        root.getChildren().add(layer);
+        statusBar = new StatusBar(root, sceneWidth, sceneHeight, game);
+        // Create decor sprites
+        spritePlayer = SpriteFactory.createPlayer(layer, player);
+        for (Monster m : monsters)
+            spriteMonsters.add(SpriteFactory.createMonster(layer,m)) ;
+    }
+
     private void update(long now) {
         player.update(now);
         List<Bomb> to_remove = new ArrayList<>();
@@ -159,8 +183,8 @@ public final class GameEngine {
             if (this.game.update()) {
                 this.player.setPosition(this.game.getPlayer().getPosition());
                 this.monsters = this.game.getMonsters();
-                this.initialize(this.stage, this.game);
                 this.statusBar.setGameLevel(this.game.getLevel());
+                this.updateWindow();
             }
             sprites.forEach(Sprite::remove);
             sprites.clear();
