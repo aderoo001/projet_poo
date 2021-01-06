@@ -7,15 +7,14 @@ package fr.ubx.poo.game;
 
 import fr.ubx.poo.model.decor.DoorNextOpened;
 import fr.ubx.poo.model.decor.DoorPrevOpened;
+import fr.ubx.poo.model.go.Bomb.Bomb;
 import fr.ubx.poo.model.go.character.Monster;
 import fr.ubx.poo.model.go.character.Player;
-import fr.ubx.poo.model.go.Bomb.Bomb;
 
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
-
 
 
 public class Game {

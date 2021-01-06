@@ -8,15 +8,13 @@ import fr.ubx.poo.game.Direction;
 import fr.ubx.poo.game.Game;
 import fr.ubx.poo.game.Position;
 import fr.ubx.poo.model.Movable;
-import fr.ubx.poo.model.decor.*;
-import fr.ubx.poo.model.go.Bomb.Bomb;
 import fr.ubx.poo.model.decor.Box;
 import fr.ubx.poo.model.decor.Decor;
 import fr.ubx.poo.model.decor.DoorNextClosed;
 import fr.ubx.poo.model.decor.DoorNextOpened;
+import fr.ubx.poo.model.go.Bomb.Bomb;
 import fr.ubx.poo.model.go.GameObject;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class Player extends GameObject implements Movable {
@@ -29,12 +27,6 @@ public class Player extends GameObject implements Movable {
     private int numberOfKeys = 0;
     private int lives;
     private int numberofBombs = 1;
-
-    public void setDamaged(boolean damaged) {
-        if (this.invicibleTimer == 0) {
-            this.isDamaged = damaged;
-        }
-    }
     private int Bombrange = 1;
     private boolean winner;
 
@@ -61,8 +53,13 @@ public class Player extends GameObject implements Movable {
     }
 
     public void requestBomb(long now) {
-        Bomb bomb = new Bomb(game,this.getPosition(),now,Bombrange);
-        game.getBombs().add(bomb) ;
+        Bomb bomb = new Bomb(game, this.getPosition(), now, Bombrange);
+        game.getBombs().add(bomb);
+    }
+
+    @Override
+    public boolean canWalkOn(Monster monster) {
+        return !super.canWalkOn(monster);
     }
 
     @Override
@@ -196,5 +193,11 @@ public class Player extends GameObject implements Movable {
 
     public void setWinner(boolean winner) {
         this.winner = winner;
+    }
+
+    public void setDamaged(boolean damaged) {
+        if (this.invicibleTimer == 0) {
+            this.isDamaged = damaged;
+        }
     }
 }
