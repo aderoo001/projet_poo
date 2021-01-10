@@ -34,4 +34,10 @@ public class Box extends Decor implements Movable {
     @Override
     public void doMove(Direction direction) {
     }
+    @Override
+    public boolean destroy (Game game,Position pos,int level) {
+        game.getWorld(level).clear(pos);
+        game.getWorld(level).setChanged(true);
+        return true ;
+    }
 }

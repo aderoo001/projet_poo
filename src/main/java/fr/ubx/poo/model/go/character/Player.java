@@ -5,12 +5,15 @@
 package fr.ubx.poo.model.go.character;
 
 import fr.ubx.poo.game.Direction;
-import fr.ubx.poo.game.Position;
-import fr.ubx.poo.game.WorldEntity;
-import fr.ubx.poo.model.Movable;
-import fr.ubx.poo.model.decor.*;
-import fr.ubx.poo.model.go.GameObject;
 import fr.ubx.poo.game.Game;
+import fr.ubx.poo.game.Position;
+import fr.ubx.poo.model.Movable;
+import fr.ubx.poo.model.decor.Box;
+import fr.ubx.poo.model.decor.Decor;
+import fr.ubx.poo.model.decor.DoorNextClosed;
+import fr.ubx.poo.model.decor.DoorNextOpened;
+import fr.ubx.poo.model.go.Bomb.Bomb;
+import fr.ubx.poo.model.go.GameObject;
 
 import java.util.List;
 
@@ -19,11 +22,14 @@ public class Player extends GameObject implements Movable {
     private boolean alive = true;
     Direction direction;
     private boolean moveRequested = false;
+    private boolean isDamaged = false;
+    private long invicibleTimer = 0;
+    private int numberOfKeys = 0;
     private int lives;
-    private int numberOfKeys = 0 ;
-    private int numberofBombs = 1 ;
+    private int numberofBombs = 1;
     private int Bombrange = 1;
     private boolean winner;
+
 
     public Player(Game game, Position position) {
         super(game, position);
@@ -46,6 +52,18 @@ public class Player extends GameObject implements Movable {
         moveRequested = true;
     }
 
+    public void requestBomb(long now) {
+        if (numberofBombs > 0) {
+            Bomb bomb = new Bomb(game, this.getPosition(), now, Bombrange);
+            game.getBombs().add(bomb);
+        }
+    }
+
+    @Override
+    public boolean canWalkOn(Monster monster) {
+        return !super.canWalkOn(monster);
+    }
+
     @Override
     public void action(Player Player, Game game, Position pos) {
         Decor decor = game.getWorld().get(Player.getDirection().nextPosition(pos));
@@ -61,6 +79,10 @@ public class Player extends GameObject implements Movable {
     public boolean canMove(Direction direction) {
         Position nextpos = direction.nextPosition(getPosition());
         if (nextpos.inside(game.getWorld().dimension)) {
+            for (Bomb b : game.getBombs()) {
+                if (b.getPosition().equals(nextpos))
+                    return false ;
+            }
             Decor decor = game.getWorld().get(nextpos) ;
             if ( decor == null)
                 return true ;
@@ -120,8 +142,17 @@ public class Player extends GameObject implements Movable {
             if (canMove(direction)) {
                 doMove(direction);
             }
+            moveRequested = false;
         }
-        moveRequested = false;
+        if (this.isDamaged) {
+            this.setDamaged(false);
+            this.setLives(this.lives - 1);
+            this.invicibleTimer = now;
+        }
+        if (now - this.invicibleTimer >= Math.pow(10, 9)) {
+            this.invicibleTimer = 0;
+        }
+        moveRequested = false ;
     }
 
     public boolean isWinner() {
@@ -130,7 +161,7 @@ public class Player extends GameObject implements Movable {
 
     public boolean isAlive() {
         if (lives <= 0)
-            alive = false ;
+            alive = false;
         return alive;
     }
 
@@ -164,5 +195,11 @@ public class Player extends GameObject implements Movable {
 
     public void setWinner(boolean winner) {
         this.winner = winner;
+    }
+
+    public void setDamaged(boolean damaged) {
+        if (this.invicibleTimer == 0) {
+            this.isDamaged = damaged;
+        }
     }
 }

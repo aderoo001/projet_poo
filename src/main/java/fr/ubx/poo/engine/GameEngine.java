@@ -6,10 +6,13 @@ package fr.ubx.poo.engine;
 
 import fr.ubx.poo.game.Direction;
 import fr.ubx.poo.game.Game;
+import fr.ubx.poo.model.go.Bomb.Bomb;
 import fr.ubx.poo.model.go.character.Monster;
 import fr.ubx.poo.model.go.character.Player;
 import fr.ubx.poo.view.sprite.Sprite;
+import fr.ubx.poo.view.sprite.SpriteBomb;
 import fr.ubx.poo.view.sprite.SpriteFactory;
+import fr.ubx.poo.view.sprite.SpriteMonster;
 import javafx.animation.AnimationTimer;
 import javafx.application.Platform;
 import javafx.scene.Group;
@@ -23,6 +26,7 @@ import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 
@@ -32,20 +36,21 @@ public final class GameEngine {
     private final String windowTitle;
     private final Game game;
     private final Player player;
-    private List<Monster> monsters;
+    private List<Monster> monsters = new ArrayList<>();
     private final List<Sprite> sprites = new ArrayList<>();
     private StatusBar statusBar;
     private Pane layer;
     private Input input;
     private Stage stage;
     private Sprite spritePlayer;
-    private final List<Sprite> spriteMonsters = new ArrayList<>();
+    private final List<SpriteMonster> spriteMonsters = new ArrayList<>();
+    private final List<SpriteBomb> spriteBombs = new ArrayList<>();
 
     public GameEngine(final String windowTitle, Game game, final Stage stage) {
         this.windowTitle = windowTitle;
         this.game = game;
         this.player = game.getPlayer();
-        this.monsters = game.getMonsters() ;
+        this.monsters.addAll(this.game.getMonsters());
         initialize(stage, game);
         buildAndSetGameLoop();
     }
@@ -81,7 +86,7 @@ public final class GameEngine {
         gameLoop = new AnimationTimer() {
             public void handle(long now) {
                 // Check keyboard actions
-                processInput();
+                processInput(now);
 
                 // Do actions
                 update(now);
@@ -92,7 +97,7 @@ public final class GameEngine {
         };
     }
 
-    private void processInput() {
+    private void processInput(long now) {
         if (input.isExit()) {
             gameLoop.stop();
             Platform.exit();
@@ -113,6 +118,9 @@ public final class GameEngine {
         if (input.isMoveUp()) {
             player.requestMove(Direction.N);
         }
+        if (input.isBomb()) {
+            player.requestBomb(now);
+        }
         input.clear();
     }
 
@@ -130,25 +138,79 @@ public final class GameEngine {
         stage.show();
         new AnimationTimer() {
             public void handle(long now) {
-                processInput();
+                processInput(now);
             }
         }.start();
     }
 
+
+    /**
+     * Update window when level changed. Remove all sprite and call
+     * initialize method.
+     */
+    private void updateWindow() {
+        this.spritePlayer.remove();
+        Iterator<SpriteMonster> monsterIterator = this.spriteMonsters.iterator();
+        while (monsterIterator.hasNext()) {
+            monsterIterator.next().remove();
+        }
+        this.spriteMonsters.clear();
+        Iterator<Sprite> spriteIterator = this.sprites.iterator();
+        while (spriteIterator.hasNext()) {
+            spriteIterator.next().remove();
+        }
+        this.sprites.clear();
+        Iterator<SpriteBomb> bombIterator = this.spriteBombs.iterator();
+        while (bombIterator.hasNext()) {
+            bombIterator.next().remove();
+        }
+        this.spriteBombs.clear();
+
+        this.initialize(this.stage, this.game);
+    }
+
     private void update(long now) {
         player.update(now);
-        if ( game.getWorld().isChanged() ) {
+        for (int i = 0 ; i < game.initWorldLevels ; i++) {
+            Iterator<Bomb> bombIterator = game.getAllBombs().get(i).iterator();
+            while (bombIterator.hasNext()){
+                bombIterator.next().update(now);
+            }
+        }
+        List<Bomb> to_remove = new ArrayList<>();
+        Iterator<Monster> monsterIterator = this.monsters.iterator();
+        while (monsterIterator.hasNext()) {
+            monsterIterator.next().update(now);
+        }
+        if (game.isDeadmonster()) {
+            spriteMonsters.forEach(SpriteMonster::remove);
+            this.spriteMonsters.clear();
+            monsters = game.getMonsters() ;
+            for (Monster m : monsters)
+                spriteMonsters.add(SpriteFactory.createMonster(layer,m));
+            game.setDeadmonster(false);
+        }
+        if (game.getWorld().isChanged()) {
             if (this.game.update()) {
                 this.player.setPosition(this.game.getPlayer().getPosition());
                 this.monsters = this.game.getMonsters();
-                this.initialize(this.stage, this.game);
-                this.statusBar.setGameLevel(this.game.getLevel());
+                this.updateWindow();
+            } else {
+                sprites.forEach(Sprite::remove);
+                sprites.clear();
+                game.getWorld().forEach((pos, d) -> sprites.add(SpriteFactory.createDecor(layer, pos, d)));
+                game.getWorld().setChanged(false);
             }
-            sprites.forEach(Sprite::remove);
-            sprites.clear();
-            game.getWorld().forEach( (pos,d) -> sprites.add(SpriteFactory.createDecor(layer, pos, d)));
-            game.getWorld().setChanged(false);
         }
+        game.getBombs().forEach(b -> {
+            if (b.isBomb_is_set() && (b.getLevel() == game.getLevel())) {
+                spriteBombs.add(SpriteFactory.createBomb(layer, b));
+            }
+            else {
+                to_remove.add(b);
+            }
+        });
+        game.getBombs().removeAll(to_remove);
         if (!player.isAlive()) {
             gameLoop.stop();
             showMessage("Perdu!", Color.RED);
@@ -163,6 +225,7 @@ public final class GameEngine {
     private void render() {
         sprites.forEach(Sprite::render);
         spriteMonsters.forEach(Sprite::render);
+        spriteBombs.forEach(SpriteBomb::render);
         // last rendering to have player in the foreground
         spritePlayer.render();
     }

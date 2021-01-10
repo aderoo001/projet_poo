@@ -7,6 +7,7 @@ package fr.ubx.poo.model.go;
 import fr.ubx.poo.game.Position;
 import fr.ubx.poo.game.Game;
 import fr.ubx.poo.model.Entity;
+import fr.ubx.poo.model.go.character.Monster;
 import fr.ubx.poo.model.go.character.Player;
 
 /***
@@ -29,8 +30,14 @@ public abstract class GameObject extends Entity {
         this.game = game;
         this.position = position;
     }
+
     public boolean canWalkOn(Player player) {
-        return true;
+        return false;
     }
-    public void action (Player Player,Game game,Position pos){}
+
+    public boolean canWalkOn(Monster monster) {
+        return false;
+    }
+
+    public void action (Player Player, Game game, Position pos){}
 }
