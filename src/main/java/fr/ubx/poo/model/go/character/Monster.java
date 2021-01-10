@@ -5,9 +5,6 @@ import fr.ubx.poo.game.Game;
 import fr.ubx.poo.game.Position;
 import fr.ubx.poo.model.Movable;
 import fr.ubx.poo.model.decor.Decor;
-import fr.ubx.poo.model.decor.DoorNextOpened;
-import fr.ubx.poo.model.decor.DoorPrevOpened;
-import fr.ubx.poo.model.go.Bomb.Bomb;
 import fr.ubx.poo.model.go.GameObject;
 
 public class Monster extends GameObject implements Movable {
@@ -33,6 +30,14 @@ public class Monster extends GameObject implements Movable {
         return direction;
     }
 
+    /**
+     * Monster can move if the next position contain nothing or
+     * decor wich canMove method return true, in otherwhise monster
+     * cant move.
+     *
+     * @param direction direction of move
+     * @return true when monster can move
+     */
     @Override
     public boolean canMove(Direction direction) {
         Position newPositon = direction.nextPosition(getPosition());

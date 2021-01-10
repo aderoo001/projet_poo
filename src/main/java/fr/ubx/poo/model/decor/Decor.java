@@ -18,6 +18,10 @@ public class Decor extends Entity {
         return false ;
     }
 
+    /**
+     * @param monster object monster
+     * @return true if monster can walk on
+     */
     public boolean canWalkOn (Monster monster){
         return false ;
     }
