@@ -53,8 +53,10 @@ public class Player extends GameObject implements Movable {
     }
 
     public void requestBomb(long now) {
-        Bomb bomb = new Bomb(game, this.getPosition(), now, Bombrange);
-        game.getBombs().add(bomb);
+        if (numberofBombs > 0) {
+            Bomb bomb = new Bomb(game, this.getPosition(), now, Bombrange);
+            game.getBombs().add(bomb);
+        }
     }
 
     @Override

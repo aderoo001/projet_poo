@@ -18,7 +18,6 @@ public final class ImageFactory {
             PLAYER_UP, PLAYER_RIGHT, PLAYER_DOWN, PLAYER_LEFT,
     };
 
-
     private final ImageResource[] bomb_states = new ImageResource[]{
             BOMB4, BOMB3, BOMB2, BOMB1, EXPLOSION, EMPTY,
     };
@@ -26,7 +25,6 @@ public final class ImageFactory {
     private final ImageResource[] monsterDirections = new ImageResource[]{
             // Direction { N, E, S, W }
             MONSTER_UP, MONSTER_RIGHT, MONSTER_DOWN, MONSTER_LEFT,
-
     };
 
     private final ImageResource[] digits = new ImageResource[]{
